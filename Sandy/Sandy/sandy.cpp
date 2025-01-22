@@ -8,11 +8,8 @@ int main()
     string s;
     getline(cin, s);    // 处理包含空格的字符串输入的情况
 
-    // 反向遍历字符串 s
-    for (int i = (int)s.length() - 1; i >= 0; i--)   // (int)s.length() - 1 为获取字符串的长度并减去 1，得到最后一个字符的下标
-    {
-        cout << s[i];
-    }
+    reverse(s.begin(), s.end());   // 函数反转字符串 s
+    cout << s;
 
     return 0;
 }

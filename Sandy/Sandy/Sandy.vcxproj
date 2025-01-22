@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b6313f3a-e51c-4d9e-a5e5-fba9253aa822}</ProjectGuid>
+    <ProjectGuid>{ac067ee2-214f-4f82-8e52-c103787b54a3}</ProjectGuid>
     <RootNamespace>Sandy</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
