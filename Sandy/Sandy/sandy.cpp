@@ -1,51 +1,51 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include<iostream>     // 包含标准输入输出库，用于使用 cin 和 cout
-#include <algorithm>   // 包含 max_element 和 min_element 所需的头文件
-#include<iomanip>      // 包含用于格式化输出的库，如 setprecision
-using namespace std;   // 使用标准命名空间，避免 std:: 前缀
+#include <iostream>
+#include<algorithm>
+using namespace std;
 
-const int N = 1e4 + 9;
-int a[N];
+const int N = 5e5 + 9;
+int nums[N];
+
+// 比较函数 cmp 用于 sort 函数中的降序排序
+bool cmp(const int& p1, const int& p2)
+{
+	// int &p1 表示 p1 是一个 int 类型的引用，可理解为 p1 是另一个 int 类型变量的别名
+	// 如果 p1 大于 p2，则返回 true，表示 p1 应该排在 p2 前面
+	return p1 > p2;
+}
 
 int main()
 {
-    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);  // 优化输入输出，加快执行速度
-    int n = 0;
-    cin >> n;
-    int i = 0;
-    long long sum = 0;
+	int n;
+	cin >> n;
 
-    for (i = 0; i < n; i++)
-    {
-        cin >> a[i];
-    }
+	int i = 0;
+	for (i = 0; i < n; i++)
+	{
+		cin >> nums[i];
+	}
 
-    // max_element 和 min_element 用于查找给定范围内的最大元素和最小元素的地址
-    // a：指向数组起始位置的地址 
-    // a + n：指向数组结束位置的地址，查找范围是 [a, a + n)
-    cout << *max_element(a, a + n) << '\n';
-    cout << *min_element(a, a + n) << '\n';
+	// 进行升序排序，范围是[nums, num + n)
+	sort(nums, nums + n);
 
-    // 方法发二
-    //int mx = a[0];
-    //int mi = a[0];
+	for (i = 0; i < n; i++)
+	{
+		cout << nums[i] << ' ';
+	}
+	cout << '\n';
 
-    // 循环遍历数组，找出最高值和最低值 
-    //for (i = 1; i < n; i++)
-    //{
-    //    mx = max(mx, a[i]);    // 更新最高值
-    //    mi = min(mi, a[i]);    // 更新最低值
-    //}
-    //cout << mx << '\n';
-    //cout << mi << '\n';
+	// 降序排序
+	sort(nums, nums + n, cmp);
 
-    //for (i = 0; i < n; i++)
-    //{
-    //    sum += a[i];
-    //}
+	for (i = 0; i < n; i++)
+	{
+		cout << nums[i] << ' ';
+	}
 
-    // 输出平均分，保留两位小数，注意要乘个 1.0
-    cout << fixed << setprecision(2) << 1.0 * sum / n;
-
-    return 0;
+	// 方法二：逆序输出
+	/*for (i = n - 1; i >= 0; i--)
+	{
+		cout << nums[i] << ' ';
+	}*/
+	return 0;
 }
