@@ -1,24 +1,52 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include<algorithm>
+#include<string>
 using namespace std;
+
+char convertCh(char ch)
+{
+	// 如果 ch 是小写字母，则转换为大写字母
+	if ('a' <= ch && ch <= 'z')
+	{
+		ch = ch - 'a' + 'A';
+	}
+	// 如果 ch 是大写字母，则转换为小写字母
+	else if ('A' <= ch && ch <= 'Z')
+	{
+		ch = ch - 'A' + 'a';
+	}
+
+	// 或使用 tolower toupper 函数
+	/*if(islower(ch))
+	{
+		ch = toupper(ch);
+	}
+	else if(isupper(ch))
+	{
+		ch = tolower(ch);
+	}*/
+
+	return ch;
+}
 
 int main()
 {
-	int data[200] = { 0 };
-	for (int i = 0; i < 200; i++)
+	string s1;
+	getline(cin, s1);
+
+	// 遍历字符串
+	for (auto& i : s1)
 	{
-		// 为每个元素进行赋值，可以看出数组 data 里的元素是升序的
-		data[i] = i * 4 + 6;
+		i = convertCh(i);
 	}
 
-	int target = 0;
-	// 假设 target 一定在数组 data 中
-	cin >> target;
+	//  方式二 
+	//	for(int i = 0 ; i < s1.size(); i++)
+	//	{
+	//		s1[i] = convertCh(s1[i]);
+	//	}
 
-	// 使用 lower_bound() 在数组 data 中利用二分查找第一个大于或等于 target 的元素的位置
-	// lower_bound 返回一个指向该元素的地址
-	cout << (lower_bound(data, data + 200, target) - data) << '\n';
+	cout << s1 << '\n';
 
 	return 0;
 }
