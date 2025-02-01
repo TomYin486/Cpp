@@ -1,52 +1,27 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include<string>
+#include<vector>
+#include<algorithm>
 using namespace std;
-
-char convertCh(char ch)
-{
-	// 如果 ch 是小写字母，则转换为大写字母
-	if ('a' <= ch && ch <= 'z')
-	{
-		ch = ch - 'a' + 'A';
-	}
-	// 如果 ch 是大写字母，则转换为小写字母
-	else if ('A' <= ch && ch <= 'Z')
-	{
-		ch = ch - 'A' + 'a';
-	}
-
-	// 或使用 tolower toupper 函数
-	/*if(islower(ch))
-	{
-		ch = toupper(ch);
-	}
-	else if(isupper(ch))
-	{
-		ch = tolower(ch);
-	}*/
-
-	return ch;
-}
 
 int main()
 {
-	string s1;
-	getline(cin, s1);
+    vector<int> vec = { 1,5,3,9,8,7,10,2,5,6,10,2,2,6,6,6,6 };
 
-	// 遍历字符串
-	for (auto& i : s1)
-	{
-		i = convertCh(i);
-	}
+    // 对 vec 中的元素进行升序排序
+    sort(vec.begin(), vec.end());
 
-	//  方式二 
-	//	for(int i = 0 ; i < s1.size(); i++)
-	//	{
-	//		s1[i] = convertCh(s1[i]);
-	//	}
+    // 将 vec 中的相邻重复元素移动到容器末尾，并返回一个指向去重后新末尾的地址 last
+    // unique 并不会真正删除元素，只是将重复元素移动到末尾
+    auto last = unique(vec.begin(), vec.end());
 
-	cout << s1 << '\n';
+    // 删除 unique 操作后移动到末尾的重复元素(从 last 到 vec.end() 之间的元素)
+    vec.erase(last, vec.end());
 
-	return 0;
+    for (auto& num : vec)
+    {
+        cout << num << ' ';
+    }
+
+    return 0;
 }
