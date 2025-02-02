@@ -1,27 +1,52 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include<vector>
 #include<algorithm>
+#include<queue>
 using namespace std;
 
-int main()
-{
-    vector<int> vec = { 1,5,3,9,8,7,10,2,5,6,10,2,2,6,6,6,6 };
+class Solution {
+public:
+    // 每次挑选当前数组中最大的那个数，然后减半直到数组和减少到一半为止
+    int halveArray(vector<int>& nums) {
+        // 创建一个最大堆（优先队列），用于存储数组中的数，方便快速获取最大值
+        priority_queue<double> heap;
 
-    // 对 vec 中的元素进行升序排序
-    sort(vec.begin(), vec.end());
+        double sum = 0;    // 用于计算数组的总和
 
-    // 将 vec 中的相邻重复元素移动到容器末尾，并返回一个指向去重后新末尾的地址 last
-    // unique 并不会真正删除元素，只是将重复元素移动到末尾
-    auto last = unique(vec.begin(), vec.end());
+        // 遍历数组中的每个数
+        for (int num : nums)
+        {
+            // 将当前数加入堆中
+            heap.push(num);
 
-    // 删除 unique 操作后移动到末尾的重复元素(从 last 到 vec.end() 之间的元素)
-    vec.erase(last, vec.end());
+            // 计算总和
+            sum += num;
+        }
 
-    for (auto& num : vec)
-    {
-        cout << num << ' ';
+        // 计算需要减少的目标值
+        sum /= 2.0;
+
+        // 计数
+        int count = 0;
+
+        while (sum > 0)
+        {
+            // 取出堆中的最大数，并将其减半
+            double t = heap.top() / 2.0;
+
+            // 将最大数从堆中移除
+            heap.pop();
+
+            // 将减半后的数重新加入堆中
+            heap.push(t);
+
+            // 从需要减少的总和中减去减半后的值
+            sum -= t;
+
+            count++;
+        }
+
+        // 返回操作次数
+        return count;
     }
-
-    return 0;
-}
+};
