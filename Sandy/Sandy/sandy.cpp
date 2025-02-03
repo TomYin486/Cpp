@@ -1,52 +1,50 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include<algorithm>
-#include<queue>
+#include<vector>
 using namespace std;
 
 class Solution {
 public:
-    // 每次挑选当前数组中最大的那个数，然后减半直到数组和减少到一半为止
-    int halveArray(vector<int>& nums) {
-        // 创建一个最大堆（优先队列），用于存储数组中的数，方便快速获取最大值
-        priority_queue<double> heap;
+    // 尽可能优先使用大面额的钞票进行找零，以确保手头的零钱能够满足后续顾客的需求以及更新零钱数量
+    bool lemonadeChange(vector<int>& bills) {
+        // 记录 5 元跟 10 元的张数
+        int five = 0;
+        int ten = 0;
 
-        double sum = 0;    // 用于计算数组的总和
-
-        // 遍历数组中的每个数
-        for (int num : nums)
+        // 遍历每个顾客支付的钞票
+        for (auto x : bills)
         {
-            // 将当前数加入堆中
-            heap.push(num);
+            // 如果顾客支付 5 元，直接收下，不需要找零
+            if (x == 5) five++;
 
-            // 计算总和
-            sum += num;
+            // 如果顾客支付 10 元，需要找 5 元
+            else if (x == 10)
+            {
+                // 如果没有 5 元，无法找零，返回 false
+                if (five == 0) return false;
+                five--;
+                ten++;
+            }
+            else
+            {
+                // 如果顾客支付 20 元，需要找 15 元
+                // 贪心: 优先使用 10 元和 5 元的组合找零
+                if (five != 0 && ten != 0)
+                {
+                    ten--;
+                    five--;
+                }
+                else if (five >= 3)
+                {
+                    five -= 3;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
-
-        // 计算需要减少的目标值
-        sum /= 2.0;
-
-        // 计数
-        int count = 0;
-
-        while (sum > 0)
-        {
-            // 取出堆中的最大数，并将其减半
-            double t = heap.top() / 2.0;
-
-            // 将最大数从堆中移除
-            heap.pop();
-
-            // 将减半后的数重新加入堆中
-            heap.push(t);
-
-            // 从需要减少的总和中减去减半后的值
-            sum -= t;
-
-            count++;
-        }
-
-        // 返回操作次数
-        return count;
+        return true;
     }
 };
