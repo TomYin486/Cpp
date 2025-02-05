@@ -1,50 +1,36 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include<algorithm>
-#include<vector>
+#include<queue>
 using namespace std;
+using ll = long long;
 
-class Solution {
-public:
-    // 尽可能优先使用大面额的钞票进行找零，以确保手头的零钱能够满足后续顾客的需求以及更新零钱数量
-    bool lemonadeChange(vector<int>& bills) {
-        // 记录 5 元跟 10 元的张数
-        int five = 0;
-        int ten = 0;
+int main()
+{
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int n; cin >> n;
 
-        // 遍历每个顾客支付的钞票
-        for (auto x : bills)
-        {
-            // 如果顾客支付 5 元，直接收下，不需要找零
-            if (x == 5) five++;
+    // 定义一个最小堆（优先队列），存储 long long 类型的元素
+    priority_queue<ll, vector<ll>, greater<ll>> pq;
 
-            // 如果顾客支付 10 元，需要找 5 元
-            else if (x == 10)
-            {
-                // 如果没有 5 元，无法找零，返回 false
-                if (five == 0) return false;
-                five--;
-                ten++;
-            }
-            else
-            {
-                // 如果顾客支付 20 元，需要找 15 元
-                // 贪心: 优先使用 10 元和 5 元的组合找零
-                if (five != 0 && ten != 0)
-                {
-                    ten--;
-                    five--;
-                }
-                else if (five >= 3)
-                {
-                    five -= 3;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
+    for (int i = 1; i <= n; i++)
+    {
+        ll x; cin >> x;
+        // 将元素 x 插入优先队列
+        pq.push(x);
     }
-};
+
+    ll ans = 0;
+    while (pq.size() >= 2)
+    {
+        // 取出堆顶元素 a,b 并弹出
+        ll a = pq.top(); pq.pop();
+        ll b = pq.top(); pq.pop();
+        ans += a + b;
+
+        // 将 a + b 插入优先队列
+        pq.push(a + b);
+    }
+
+    cout << ans << '\n';
+    return 0;
+}
