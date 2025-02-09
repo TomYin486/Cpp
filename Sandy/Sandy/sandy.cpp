@@ -1,46 +1,71 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <cstring>     // 用于使用 strlen
+#include <queue>       
 using namespace std;
-
-// 将 L 看做 1，Q 看做 -1，只有当某个区间的和为 0 时，字符串是平衡的
-// 可以预处理出前缀和，然后枚举所有区间（这一步的时间复杂度是 O(n ^ 2)的），得到所有平衡区间的长度最后取大输出
-
-const int N = 1010;   // 数组的最大大小  
-char s[N];            // 用于输入的字符串  
-int prefix[N];        // 存储前缀和数组  
 
 int main()
 {
-    cin >> s + 1;            // 从下标 1 开始输入字符串
-    int n = strlen(s + 1);   // 计算字符串的长度
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);   // 优化输入输出
 
-    int i = 0;
-    int j = 0;
-    prefix[0] = 0;
+    int m;  
+    cin >> m;    // 输入操作次数 m
 
-    // 计算前缀和数组，'L' 对应 +1，'Q' 对应 -1
-    for (i = 1; i <= n; i++)
+    // 创建两个队列，V 表示 VIP 窗口队列，N 表示普通窗口队列
+    queue<string> V, N;
+
+    // 处理 m 次操作
+    while (m--)
     {
-        prefix[i] = prefix[i - 1] + (s[i] == 'L' ? 1 : -1);
-    }
+        string op;  // op 表示操作类型
+        cin >> op;  
 
-    int ans = 0;         // 表示最长平衡串的长度
-
-    // 遍历所有可能的子串，检查是否为平衡串
-    for (i = 1; i <= n; i++)
-    {
-        for (j = i; j <= n; j++)
+        if (op == "IN")   // 如果是 "IN"，表示有用户进入队列
         {
-            // 如果前缀和差为 0，则子串中 'L' 和 'Q' 的数量相等
-            if (prefix[j] - prefix[i - 1] == 0)
+            string name, q;    //  name 表示用户名，q 表示队列类型
+            cin >> name >> q;  
+
+            // 如果是 VIP 窗口
+            if (q == "V")  
             {
-                ans = max(ans, j - i + 1);      // 更新最长平衡串的长度
+                V.push(name);  // 将用户加入 VIP 队列
+            }
+            else  
+            {
+                // 否则加入普通队列
+                N.push(name); 
+            }
+        }
+        else  // 如果是 "OUT"，表示有用户离开队列
+        {
+            string q;  
+            cin >> q;  
+
+            if (q == "V")  
+            {
+                // VIP 队列队头用户离开
+                V.pop();  
+            }
+            else  
+            {
+                // 普通队列队头用户离开
+                N.pop();  
             }
         }
     }
 
-    cout << ans << '\n';      // 输出最长平衡串的长度
+    // 输出 VIP 队列中的所有用户
+    while (V.size())  
+    {
+        cout << V.front() << '\n';  
+        V.pop();  
+    }
 
-    return 0;
+    // 输出普通队列中的所有用户
+    while (N.size())  
+    {
+        cout << N.front() << '\n';  
+        N.pop();  
+    }
+
+    return 0;  
 }
