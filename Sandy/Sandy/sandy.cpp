@@ -1,71 +1,41 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <queue>       
+#include <vector>   
+#include<string>
+#include<algorithm>
 using namespace std;
 
-int main()
-{
-    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);   // 优化输入输出
-
-    int m;  
-    cin >> m;    // 输入操作次数 m
-
-    // 创建两个队列，V 表示 VIP 窗口队列，N 表示普通窗口队列
-    queue<string> V, N;
-
-    // 处理 m 次操作
-    while (m--)
-    {
-        string op;  // op 表示操作类型
-        cin >> op;  
-
-        if (op == "IN")   // 如果是 "IN"，表示有用户进入队列
+class Solution {
+public:
+    string largestNumber(vector<int>& nums) {
+        // 优化，将所有的整数转换为字符串
+        vector<string> strs;
+        for (int x : nums)
         {
-            string name, q;    //  name 表示用户名，q 表示队列类型
-            cin >> name >> q;  
-
-            // 如果是 VIP 窗口
-            if (q == "V")  
-            {
-                V.push(name);  // 将用户加入 VIP 队列
-            }
-            else  
-            {
-                // 否则加入普通队列
-                N.push(name); 
-            }
+            strs.push_back(to_string(x));
         }
-        else  // 如果是 "OUT"，表示有用户离开队列
+
+        // 排序
+        sort(strs.begin(), strs.end(), [](const string& s1, const string& s2)
+            {
+                // 如果 s1 + s2 > s2 + s1，则 s1 排在 s2 前面
+                return s1 + s2 > s2 + s1;
+            });
+
+        // 将排序后的字符串拼接成最终的结果
+        string ret;
+        for (auto& s : strs)
         {
-            string q;  
-            cin >> q;  
-
-            if (q == "V")  
-            {
-                // VIP 队列队头用户离开
-                V.pop();  
-            }
-            else  
-            {
-                // 普通队列队头用户离开
-                N.pop();  
-            }
+            ret += s;
         }
-    }
 
-    // 输出 VIP 队列中的所有用户
-    while (V.size())  
-    {
-        cout << V.front() << '\n';  
-        V.pop();  
-    }
+        // 如果结果的第一个字符是 '0'，说明所有数字都是 0，直接返回 "0"
+        if (ret[0] == '0')
+        {
+            return "0";
+        }
 
-    // 输出普通队列中的所有用户
-    while (N.size())  
-    {
-        cout << N.front() << '\n';  
-        N.pop();  
+        // 返回拼接后的最大数
+        return ret;
     }
-
-    return 0;  
-}
+};
