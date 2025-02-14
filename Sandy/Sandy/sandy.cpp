@@ -1,26 +1,36 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include<algorithm>
 using namespace std;
+
+// 比较函数
+bool cmp(string a, string b)
+{
+    // 如果 a + b > b + a，则 a 应该排在 b 前面
+    return a + b > b + a;
+}
 
 int main()
 {
-    // int 类型，右移操作是算术右移，在左侧补符号位（正数补 0，负数补 1）
-    // unsigned int 类型，右移操作是逻辑右移，在左侧补 0
-    unsigned int n;
-    cin >> n;
-    int count = 0;   // 用于统计二进制中 1 的个数
+    int n; 
+    cin >> n; 
 
-    while (n > 0)
+    string s[n];    // 字符串数组 s 用于存储 n 个正整数
+    int i = 0;
+    // 读取 n 个正整数
+    for (i = 0; i < n; i++)
     {
-        // 检查 n 的最低位是否为 1
-        if ((n & 1) != 0)
-        {
-            // 如果最低位是 1，计数器加 1
-            count++;
-        }
-        n >>= 1;    // 将 n 右移一位，相当于去掉最低位
+        cin >> s[i]; 
     }
 
-    cout << count << '\n';
-    return 0;
+    // 对数组进行排序
+    sort(s, s + n, cmp);
+
+    // 输出排序后的字符串数组 s
+    for (i = 0; i < n; i++)
+    {
+        cout << s[i]; 
+    }
+
+    return 0; 
 }
