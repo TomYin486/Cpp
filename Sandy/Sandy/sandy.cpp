@@ -2,44 +2,61 @@
 #include <iostream>
 using namespace std;
 
-const int N = 2e5 + 9;
-int a[N];
+const int N = 120;       // 花园的最大尺寸
+bool a[N][N], b[N][N];   // 花园的灌溉状态
 
-// 利用快慢指针，保持区间 [i,j] 中 >= m 的个数至少有 k 个，且区间尽可能小
-// 得到区间 [i,j] 后，对于这个左端点，有 n - j + 1 个右段点可取
 int main()
 {
-    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0); // 优化输入输出
-    int n, m, k;
-    cin >> n >> m >> k;
+    int n, m; cin >> n >> m;    // 花园的行数和列数
 
-    // 得到数组 a
-    for (int i = 1; i <= n; i++)
+    int t; cin >> t;            // 输入出水管的数量
+    for (int i = 1; i <= t; i++)
     {
-        cin >> a[i];
+        // 输入每个出水管的坐标
+        int x, y;
+        cin >> x >> y;
+        a[x][y] = 1;      // 在数组 a 中标记出水管的位置
     }
 
-    int ans = 0;    // 表示满足条件的子串数量
+    int k; cin >> k;       // 灌溉的分钟数
 
-    // 使用双指针 i 和 j 来遍历数组
-    // cnt 用于记录当前子串中大于等于 m 的元素数量
-    for (int i = 1, j = 0, cnt = 0; i <= n; i++)
+    // 循环 k 次，模拟每分钟的灌溉过程
+    while (k--)
     {
-        // 移动 j 指针，直到当前子串中有至少 k 个元素大于等于 m
-        while (i > j || (j + 1 <= n && cnt < k))
+        for (int i = 1; i <= n; i++)
         {
-            j++;
-            cnt += (a[j] >= m);   // 如果 a[j] >= m，则 cnt 增加
+            for (int j = 1; j <= m; j++)
+            {
+                if (a[i][j] == 1) // 如果当前位置已经被灌溉
+                {
+                    // 将当前位置的上下左右四个方向标记为已灌溉
+                    b[i][j] = b[i - 1][j] = b[i + 1][j] = b[i][j - 1] = b[i][j + 1] = 1;
+                }
+            }
         }
 
-        // 如果满足条件，则计算从当前子串开始到数组末尾的所有可能的子串数量
-        if (cnt >= k)
+        // 将 b 数组的灌溉状态复制到 a 数组，以便下一分钟的扩展
+        for (int i = 1; i <= n; i++)
         {
-            ans += n - j + 1;
+            for (int j = 1; j <= m; j++)
+            {
+                a[i][j] = b[i][j];
+            }
         }
+    }
 
-        // 移动 i 指针，减少 cnt 中相应的计数
-        cnt -= (a[i] >= m);
+    // 计算最终被灌溉的方格数量
+    int ans = 0;
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= m; j++)
+        {
+            // 如果当前位置被灌溉，增加计数
+            if (a[i][j] == 1)
+            {
+                ans++;
+            }
+        }
     }
 
     cout << ans << '\n';
