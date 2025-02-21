@@ -2,63 +2,64 @@
 #include <iostream>
 using namespace std;
 
-const int N = 120;       // 花园的最大尺寸
-bool a[N][N], b[N][N];   // 花园的灌溉状态
+int n, ans;         // n: 皇后数量, ans: 记录合法的放置方法数量
+const int N = 15;
+int vis[N][N];      // vis[i][j] 表示位置 (i,j) 被多少个皇后占据或受到攻击
+
+// dfs 函数，用于递归尝试放置皇后
+// dep: 当前正在放置第 dep 个皇后
+void dfs(int dep)
+{
+    // 如果 dep == n + 1，说明已经成功放置了 n 个皇后
+    if (dep == n + 1)
+    {
+        ans++;    
+        return;   // 返回上一层递归
+    }
+
+    // 遍历当前行的每一列，尝试放置皇后
+    for (int i = 1; i <= n; i++)
+    {
+        // 如果当前位置已经被占据或受到攻击，跳过
+        if (vis[dep][i]) continue;
+
+        // 修改状态：放置皇后，并标记其攻击范围
+        // 1. 标记当前列
+        for (int _i = 1; _i <= n; _i++) vis[_i][i]++;
+        // 2. 标记左上对角线
+        for (int _i = dep, _j = i; _i >= 1 && _j >= 1; _i--, _j--) vis[_i][_j]++;
+        // 3. 标记左下对角线
+        for (int _i = dep, _j = i; _i <= n && _j >= 1; _i++, _j--) vis[_i][_j]++;
+        // 4. 标记右上对角线
+        for (int _i = dep, _j = i; _i >= 1 && _j <= n; _i--, _j++) vis[_i][_j]++;
+        // 5. 标记右下对角线
+        for (int _i = dep, _j = i; _i <= n && _j <= n; _i++, _j++) vis[_i][_j]++;
+
+        // 递归放置下一个皇后
+        dfs(dep + 1);
+
+        // 恢复现场：回溯时撤销当前皇后的放置和攻击范围标记
+        // 1. 撤销当前列的标记
+        for (int _i = 1; _i <= n; _i++) vis[_i][i]--;
+        // 2. 撤销左上对角线标记
+        for (int _i = dep, _j = i; _i >= 1 && _j >= 1; _i--, _j--) vis[_i][_j]--;
+        // 3. 撤销左下对角线标记
+        for (int _i = dep, _j = i; _i <= n && _j >= 1; _i++, _j--) vis[_i][_j]--;
+        // 4. 撤销右上对角线标记
+        for (int _i = dep, _j = i; _i >= 1 && _j <= n; _i--, _j++) vis[_i][_j]--;
+        // 5. 撤销右下对角线标记
+        for (int _i = dep, _j = i; _i <= n && _j <= n; _i++, _j++) vis[_i][_j]--;
+    }
+}
 
 int main()
 {
-    int n, m; cin >> n >> m;    // 花园的行数和列数
+    cin >> n;
 
-    int t; cin >> t;            // 输入出水管的数量
-    for (int i = 1; i <= t; i++)
-    {
-        // 输入每个出水管的坐标
-        int x, y;
-        cin >> x >> y;
-        a[x][y] = 1;      // 在数组 a 中标记出水管的位置
-    }
-
-    int k; cin >> k;       // 灌溉的分钟数
-
-    // 循环 k 次，模拟每分钟的灌溉过程
-    while (k--)
-    {
-        for (int i = 1; i <= n; i++)
-        {
-            for (int j = 1; j <= m; j++)
-            {
-                if (a[i][j] == 1) // 如果当前位置已经被灌溉
-                {
-                    // 将当前位置的上下左右四个方向标记为已灌溉
-                    b[i][j] = b[i - 1][j] = b[i + 1][j] = b[i][j - 1] = b[i][j + 1] = 1;
-                }
-            }
-        }
-
-        // 将 b 数组的灌溉状态复制到 a 数组，以便下一分钟的扩展
-        for (int i = 1; i <= n; i++)
-        {
-            for (int j = 1; j <= m; j++)
-            {
-                a[i][j] = b[i][j];
-            }
-        }
-    }
-
-    // 计算最终被灌溉的方格数量
-    int ans = 0;
-    for (int i = 1; i <= n; i++)
-    {
-        for (int j = 1; j <= m; j++)
-        {
-            // 如果当前位置被灌溉，增加计数
-            if (a[i][j] == 1)
-            {
-                ans++;
-            }
-        }
-    }
+    // 调用 dfs 函数，从第 1 个皇后开始放置
+    dfs(1);
 
     cout << ans << '\n';
+
     return 0;
 }
