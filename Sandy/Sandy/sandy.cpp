@@ -1,65 +1,116 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
+#include<iostream>
+#include<string>
+#include<algorithm>
 using namespace std;
 
-int n, ans;         // n: 皇后数量, ans: 记录合法的放置方法数量
-const int N = 15;
-int vis[N][N];      // vis[i][j] 表示位置 (i,j) 被多少个皇后占据或受到攻击
-
-// dfs 函数，用于递归尝试放置皇后
-// dep: 当前正在放置第 dep 个皇后
-void dfs(int dep)
+// 将字符串转换为整数
+int s2i(string s)
 {
-    // 如果 dep == n + 1，说明已经成功放置了 n 个皇后
-    if (dep == n + 1)
-    {
-        ans++;    
-        return;   // 返回上一层递归
-    }
-
-    // 遍历当前行的每一列，尝试放置皇后
-    for (int i = 1; i <= n; i++)
-    {
-        // 如果当前位置已经被占据或受到攻击，跳过
-        if (vis[dep][i]) continue;
-
-        // 修改状态：放置皇后，并标记其攻击范围
-        // 1. 标记当前列
-        for (int _i = 1; _i <= n; _i++) vis[_i][i]++;
-        // 2. 标记左上对角线
-        for (int _i = dep, _j = i; _i >= 1 && _j >= 1; _i--, _j--) vis[_i][_j]++;
-        // 3. 标记左下对角线
-        for (int _i = dep, _j = i; _i <= n && _j >= 1; _i++, _j--) vis[_i][_j]++;
-        // 4. 标记右上对角线
-        for (int _i = dep, _j = i; _i >= 1 && _j <= n; _i--, _j++) vis[_i][_j]++;
-        // 5. 标记右下对角线
-        for (int _i = dep, _j = i; _i <= n && _j <= n; _i++, _j++) vis[_i][_j]++;
-
-        // 递归放置下一个皇后
-        dfs(dep + 1);
-
-        // 恢复现场：回溯时撤销当前皇后的放置和攻击范围标记
-        // 1. 撤销当前列的标记
-        for (int _i = 1; _i <= n; _i++) vis[_i][i]--;
-        // 2. 撤销左上对角线标记
-        for (int _i = dep, _j = i; _i >= 1 && _j >= 1; _i--, _j--) vis[_i][_j]--;
-        // 3. 撤销左下对角线标记
-        for (int _i = dep, _j = i; _i <= n && _j >= 1; _i++, _j--) vis[_i][_j]--;
-        // 4. 撤销右上对角线标记
-        for (int _i = dep, _j = i; _i >= 1 && _j <= n; _i--, _j++) vis[_i][_j]--;
-        // 5. 撤销右下对角线标记
-        for (int _i = dep, _j = i; _i <= n && _j <= n; _i++, _j++) vis[_i][_j]--;
-    }
+	int res = 0;
+	for (const auto& i : s)
+	{
+		res = res * 10 + i - '0';
+	}
+	return res;
 }
+
+// 将整数转换为字符串，并确保字符串的长度为 w
+string i2s(int x, int w)
+{
+	string res;
+	while (x) res += (x % 10) + '0', x /= 10;
+	while (res.length() < w) res += '0';
+	reverse(res.begin(), res.end());
+	return res;
+}
+
+// 判断是否是闰年
+bool isLeapYear(int year)
+{
+	return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+// 判断日期是否合法
+bool isok(int year, int month, int day)
+{
+	int days[] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
+	if (isLeapYear(year))
+	{
+		days[2] = 29;
+	}
+	return day <= days[month];
+}
+
+// 判断字符串是否是回文
+bool isPa(string s)
+{
+	for (int i = 0; i < s.length() / 2; i++)
+	{
+		if (s[i] != s[s.length() - 1 - i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+// 判断字符串是否是 ABABBABA 型的回文
+bool isPa2(string s)
+{
+	if (!isPa(s))
+	{
+		return false;
+	}
+	return s[0] == s[2] && s[1] == s[3];
+}
+
+// s2i 函数：将字符串转换为整数
+// i2s 函数：将整数转换为字符串，并确保字符串的长度为指定长度
+// isLeapYear 函数：判断某年是否是闰年
+// isok 函数：判断给定的年、月、日是否是一个合法的日期
+// isPa 函数：判断一个字符串是否是回文
+// isPa2 函数：判断一个字符串是否是 ABABBABA 型的回文
 
 int main()
 {
-    cin >> n;
+	string s; cin >> s;
+	int year = s2i(s.substr(0, 4)), month = s2i(s.substr(4, 2)), day = s2i(s.substr(6, 2));
 
-    // 调用 dfs 函数，从第 1 个皇后开始放置
-    dfs(1);
+	bool ans1 = false, ans2 = false;
 
-    cout << ans << '\n';
+	// 遍历年份
+	for (int i = year; i <= 9999; i++)
+	{
+		// 遍历月份
+		for (int j = 1; j <= 12; j++)
+		{
+			if (i == year && j < month)	continue;
+			// 遍历天数
+			for (int k = 1; k <= 31; k++)
+			{
+				if (i == year && j == month && k <= day) continue;
 
-    return 0;
+				// 检查日期是否合法
+				if (!isok(i, j, k)) continue;
+
+				// 将日期转换为字符串
+				string date = i2s(i, 4) + i2s(j, 2) + i2s(k, 2);
+
+				// 检查是否是回文日期
+				if (!ans1 && isPa(date))
+				{
+					cout << date << '\n';
+					ans1 = true;
+				}
+
+				// 检查是否是 ABABBABA 型的回文日期
+				if (!ans2 && isPa2(date))
+				{
+					cout << date << '\n';
+					ans2 = true;
+				}
+			}
+		}
+	}
 }
