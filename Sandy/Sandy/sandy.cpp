@@ -4,24 +4,41 @@ using namespace std;
 
 class Solution {
 public:
-    bool isValid(string s) {
-        // 左括号入栈，右括号出栈
-        stack<char> stk;
-        for (char ch : s) {
-            if (ch == '(' || ch == '{' || ch == '[') stk.push(ch);
-            else {
-                if (stk.empty()) {
-                    return false;  // 没有匹配的左括号
-                }
-                char top = stk.top();
-                if ((ch == ')' && top == '(') ||
-                    (ch == '}' && top == '{') ||
-                    (ch == ']' && top == '[')) {
-                    stk.pop();
-                }
-                else return false;  // 括号不匹配
-            }
-        }
-        return stk.empty();  // 如果栈为空，说明所有括号都匹配
-    }
+	void duplicateZeros(vector<int>& arr) {
+		// 1.先找到最后一个数
+		int cur = 0;      // cur 用于遍历数组
+		int dest = -1;    // dest 用于记录复写后的位置
+		int n = arr.size();  
+		while (cur < n)
+		{
+			// 如果当前元素不为 0，dest 前进 1 步，否则，复写 0 前进 2 步
+			if (arr[cur]) dest++;  
+			else dest += 2;  
+			if (dest >= n - 1) break;  // 如果 dest 已经到达或超过数组的最后一个位置，跳出循环
+			cur++;  
+		}
+
+		// 2.处理边界情况
+		if (dest == n)
+		{
+			// 将数组最后一个元素设置为 0
+			arr[n - 1] = 0;  
+			cur--;  
+			dest -= 2;  
+		}
+
+		// 3.从后向前完成复写操作
+		while (cur >= 0)
+		{
+			// 如果当前元素不为 0，直接复制到 dest 位置
+			if (arr[cur]) arr[dest--] = arr[cur--];  
+			else
+			{
+				// 如果当前元素为 0，复写两个 0
+				arr[dest--] = 0;  
+				arr[dest--] = 0;
+				cur--;  
+			}
+		}
+	}
 };
