@@ -1,59 +1,30 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-const int N = 1e5 + 9;
-vector<int> g[N];     // 邻接表，存储帮派的关系
-int siz[N];           // siz[x] 表示以 x 为根节点的子树的大小，相当于 x 的手下数量
-
-struct Node
-{
-    int siz, id;   // siz 表示手下数量，id 表示帮众的序号
-
-    // 排序
-    bool operator<(const Node& u) const
-    {
-        return siz == u.siz ? id < u.id : siz > u.siz;
-    }
-};
-
-vector<Node> v;    // 存储所有帮众的信息
-
-// 计算以 x 为根节点的子树大小(手下数量)
-void dfs(int x, int p)
-{
-    siz[x] = 1;        // 初始化当前节点的手下数量为 1（自己）
-    for (const auto& y : g[x])  // 遍历 x 的所有子节点
-    {
-        if (y == p) continue;  // 跳过父节点
-        dfs(y, x);             // 计算子节点的手下数量，当前 y 的父节点为 x 
-        siz[x] += siz[y];
-    }
-}
+const int M = 1e4 + 9;
+int dp[M][2];    // dp[i][j] 表示在重量为 i，使用了 j 次魔法，所获得的最大价值 
 
 int main()
 {
-    int n, m; cin >> n >> m;  // 输入帮派总人数 n 和小明的序号 m
+	// n 物品数量，m 背包容量，k 使用魔法增加的重量
+	int n = 0, m = 0, k = 0; cin >> n >> m >> k;
+	// 对于每个物品有 3 种选择：可以不选，选但不用魔法，选且用魔法
+	for (int i = 1; i <= n; i++)
+	{
+		int w = 0, v = 0; cin >> w >> v;
+		for (int j = m; j >= 0; j--)
+		{
+			// 不使用魔法
+			if (j >= w)
+			{
+				dp[j][0] = max(dp[j][0], dp[j - w][0] + v);
+				dp[j][1] = max(dp[j][1], dp[j - w][1] + v);
+			}
+			// 使用魔法
+			if (j >= w + k) dp[j][1] = max(dp[j][1], dp[j - w - k][0] + v * 2);
+		}
+	}
 
-    // 输入帮派的关系网
-    for (int i = 1; i < n; ++i)
-    {
-        int x, y; cin >> x >> y;
-        g[y].push_back(x);  // 将 x 添加到 y 的子节点中
-    }
-
-    // 从根节点 1 开始，计算每个节点的手下数量
-    dfs(1, 0);
-
-    // 将所有帮众的信息存储到数组 v 中
-    for (int i = 1; i <= n; ++i)
-        v.push_back({ siz[i] - 1, i });  // siz[i] - 1 表示除去自己后的手下数量
-
-    // 按照手下数量从大到小排序，如果手下数量相同则按序号从小到大排序
-    sort(v.begin(), v.end());
-
-    // 遍历排序后的结果，找到小明的排名
-    for (int i = 0; i < v.size(); ++i)
-        if (v[i].id == m)
-            cout << i + 1 << '\n';  // 输出排名
-
-    return 0;
+	// 输出不使用魔法和使用魔法的最大值中的较大的 
+	cout << max(dp[m][0], dp[m][1]) << '\n';
+	return 0;
 }
