@@ -1,30 +1,42 @@
-#include<bits/stdc++.h>
+#include <iostream>
 using namespace std;
-const int M = 1e4 + 9;
-int dp[M][2];    // dp[i][j] 表示在重量为 i，使用了 j 次魔法，所获得的最大价值 
+const int N = 1e5 + 9;
+int n, a[N], dfn[N], idx, mindfn;
+// n: 小朋友的数量
+// a[N]: 每个小朋友崇拜的对象
+// dfn[N]: 记录每个小朋友的访问顺序(时间戳)
+// idx: 当前的时间戳
+// mindfn: 当前 DFS 的最小时间戳
+
+// 查找环
+int dfs(int x)
+{
+    dfn[x] = ++idx;   // 给当前节点 x 打上时间戳
+    if (dfn[a[x]]) 
+    {
+        // 如果 a[x] 的时间戳在当前 DFS 的最小时间戳之后, 返回环的长度
+        if (dfn[a[x]] >= mindfn) return dfn[x] - dfn[a[x]] + 1;  
+        return 0;      // 没有形成有效的环
+    }
+    return dfs(a[x]);  
+}
 
 int main()
 {
-	// n 物品数量，m 背包容量，k 使用魔法增加的重量
-	int n = 0, m = 0, k = 0; cin >> n >> m >> k;
-	// 对于每个物品有 3 种选择：可以不选，选但不用魔法，选且用魔法
-	for (int i = 1; i <= n; i++)
-	{
-		int w = 0, v = 0; cin >> w >> v;
-		for (int j = m; j >= 0; j--)
-		{
-			// 不使用魔法
-			if (j >= w)
-			{
-				dp[j][0] = max(dp[j][0], dp[j - w][0] + v);
-				dp[j][1] = max(dp[j][1], dp[j - w][1] + v);
-			}
-			// 使用魔法
-			if (j >= w + k) dp[j][1] = max(dp[j][1], dp[j - w - k][0] + v * 2);
-		}
-	}
-
-	// 输出不使用魔法和使用魔法的最大值中的较大的 
-	cout << max(dp[m][0], dp[m][1]) << '\n';
-	return 0;
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0); 
+    cin >> n;    
+    for (int i = 1; i <= n; i++) cin >> a[i];   
+        
+    int ans = 0;  // 最大环的长度
+    for (int i = 1; i <= n; i++) 
+    {
+        // 如果当前小朋友没有被访问过, 设置当前 DFS 的最小时间戳
+        if (!dfn[i]) 
+        {
+            mindfn = idx + 1;    
+            ans = max(ans, dfs(i));  
+        }
+    }
+    cout << ans << '\n';
+    return 0;
 }
