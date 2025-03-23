@@ -1,42 +1,36 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
-const int N = 1e5 + 9;
-int n, a[N], dfn[N], idx, mindfn;
-// n: 小朋友的数量
-// a[N]: 每个小朋友崇拜的对象
-// dfn[N]: 记录每个小朋友的访问顺序(时间戳)
-// idx: 当前的时间戳
-// mindfn: 当前 DFS 的最小时间戳
+const int N = 1e6 + 9;
+int cnt[N], prefix[N];  // cnt[i] 乘积为 i 的三角形个数 
 
-// 查找环
-int dfs(int x)
+// 生成所有可能的三角形个数，并计算 V, st 上一个选择的边长, mul 为前面的乘积数, sum 为边长和  
+void dfs(int dep, int st, int mul, int sum)
 {
-    dfn[x] = ++idx;   // 给当前节点 x 打上时间戳
-    if (dfn[a[x]]) 
+    if (mul > 1e6) return;  // 如果乘积超过 1e6，直接返回
+    if (dep == 4)  // 如果已经选择了 3 条边, 统计乘积为 mul 的三角形个数
     {
-        // 如果 a[x] 的时间戳在当前 DFS 的最小时间戳之后, 返回环的长度
-        if (dfn[a[x]] >= mindfn) return dfn[x] - dfn[a[x]] + 1;  
-        return 0;      // 没有形成有效的环
+        cnt[mul]++;  
+        return;
     }
-    return dfs(a[x]);  
+
+    // 计算当前层可以选择的最大边长
+    int up = pow(1e6 / mul, 1.0 / (4 - dep)) + 3;
+    for (int i = st + 1; i < (dep == 3 ? sum : up); i++)
+    {
+        dfs(dep + 1, i, mul * i, sum + i);   // 选择下一条边
+    }
 }
 
 int main()
 {
-    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0); 
-    cin >> n;    
-    for (int i = 1; i <= n; i++) cin >> a[i];   
-        
-    int ans = 0;  // 最大环的长度
-    for (int i = 1; i <= n; i++) 
+    dfs(1, 0, 1, 0);  // 从第一条边开始
+    for (int i = 1; i <= 1e6; i++) prefix[i] = prefix[i - 1] + cnt[i];  // 计算前缀和
+
+    int t = 0; cin >> t;  
+    while (t--)
     {
-        // 如果当前小朋友没有被访问过, 设置当前 DFS 的最小时间戳
-        if (!dfn[i]) 
-        {
-            mindfn = idx + 1;    
-            ans = max(ans, dfs(i));  
-        }
+        int l = 0, r = 0; cin >> l >> r;  
+        cout << prefix[r] - prefix[l - 1] << '\n';  
     }
-    cout << ans << '\n';
     return 0;
 }
