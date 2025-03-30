@@ -1,36 +1,26 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-const int N = 1e6 + 9;
-int cnt[N], prefix[N];  // cnt[i] 乘积为 i 的三角形个数 
-
-// 生成所有可能的三角形个数，并计算 V, st 上一个选择的边长, mul 为前面的乘积数, sum 为边长和  
-void dfs(int dep, int st, int mul, int sum)
-{
-    if (mul > 1e6) return;  // 如果乘积超过 1e6，直接返回
-    if (dep == 4)  // 如果已经选择了 3 条边, 统计乘积为 mul 的三角形个数
-    {
-        cnt[mul]++;  
-        return;
-    }
-
-    // 计算当前层可以选择的最大边长
-    int up = pow(1e6 / mul, 1.0 / (4 - dep)) + 3;
-    for (int i = st + 1; i < (dep == 3 ? sum : up); i++)
-    {
-        dfs(dep + 1, i, mul * i, sum + i);   // 选择下一条边
-    }
-}
+const int N = 2e4 + 9;
+int dp[N];    // dp[j] 表示背包容量为 j 时的最大价值
 
 int main()
 {
-    dfs(1, 0, 1, 0);  // 从第一条边开始
-    for (int i = 1; i <= 1e6; i++) prefix[i] = prefix[i - 1] + cnt[i];  // 计算前缀和
+    int n = 0, m = 0; cin >> n >> m;  //  宝物种类数 n 和背包容量 m
 
-    int t = 0; cin >> t;  
-    while (t--)
+    for (int i = 1; i <= n; i++)
     {
-        int l = 0, r = 0; cin >> l >> r;  
-        cout << prefix[r] - prefix[l - 1] << '\n';  
+        // 宝物的体积 v、价值 w 和数量 s
+        int v = 0, w = 0, s = 0; cin >> v >> w >> s;
+
+        // 将 s 件物品拆分成 1, 2, 4,..., 2^k 件物品的组合
+        for (int k = 1; s >= k; s -= k, k *= 2)
+        {
+            // 对拆分后的k件物品进行选择, 选择是否拿这 k 件物品：比较不拿和拿的价值
+            for (int j = m; j >= k * v; j--) dp[j] = max(dp[j], dp[j - k * v] + k * w);
+        }
+        // 处理拆分后剩余的物品数量 s
+        for (int j = m; j >= s * v; j--) dp[j] = max(dp[j], dp[j - s * v] + s * w);
     }
+    cout << dp[m] << '\n';
     return 0;
 }
